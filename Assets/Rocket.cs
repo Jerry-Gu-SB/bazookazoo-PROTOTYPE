@@ -1,30 +1,18 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class Rocket : MonoBehaviour
+public class Rocket : NetworkBehaviour
 {
-    public Rigidbody2D playerRigidBody;
-    public Transform playerTransform;
     public float explosionRadius = 5f;
     public float explosionForce = 5f;
     public bool hasExploded = false;
+    public int shooterTeam;
 
-    void Start()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            playerTransform = player.transform;
-            playerRigidBody = player.GetComponent<Rigidbody2D>();
-        }
-        else
-        {
-            Debug.LogWarning("Player not found by Rocket script.");
-        }
-    }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Exploded on " + collision.collider.name);
-        if (!hasExploded && collision.collider.CompareTag("Ground"))
+        if (hasExploded) return;
+
+        if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Player"))
         {
             hasExploded = true;
             Explode();
@@ -34,19 +22,21 @@ public class Rocket : MonoBehaviour
 
     void Explode()
     {
-        Vector2 explosionCenter = transform.position;
-        Vector2 playerPosition = playerTransform.position;
-
-        float distance = Vector2.Distance(explosionCenter, playerPosition);
-
-        if (distance <= explosionRadius)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        foreach (var hit in hits)
         {
-            Vector2 direction = (playerPosition - explosionCenter).normalized;
-            float forceMagnitude = Mathf.Lerp(explosionForce, 0, distance / explosionRadius);
-
-            playerRigidBody.AddForce(direction * forceMagnitude, ForceMode2D.Impulse);
+            if (hit.CompareTag("Player"))
+            {
+                var pm = hit.GetComponent<PlayerMovement>();
+                if (pm != null && pm.TeamID.Value != shooterTeam)
+                {
+                    Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
+                    Vector2 dir = (Vector2)(hit.transform.position - transform.position).normalized;
+                    float dist = Vector2.Distance(transform.position, hit.transform.position);
+                    float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
+                    prb.AddForce(dir * force, ForceMode2D.Impulse);
+                }
+            }
         }
-        
     }
-
 }

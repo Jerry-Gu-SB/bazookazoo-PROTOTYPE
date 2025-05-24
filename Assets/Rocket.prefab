@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4804656750437669267}
   - component: {fileID: 3884203566717133561}
+  - component: {fileID: 1798861743111209359}
   - component: {fileID: 3168168833649956264}
   - component: {fileID: 3528261394179401414}
   - component: {fileID: 8462021683003109107}
@@ -88,6 +89,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1798861743111209359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8124241534398955514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 66299530
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &3168168833649956264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,11 +122,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3415219036e194e47b0732a6991b6d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerRigidBody: {fileID: 0}
-  playerTransform: {fileID: 0}
   explosionRadius: 5
   explosionForce: 20
   hasExploded: 0
+  shooterTeam: 0
 --- !u!50 &3528261394179401414
 Rigidbody2D:
   serializedVersion: 4

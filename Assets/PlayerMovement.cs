@@ -18,7 +18,11 @@ public class PlayerMovement : NetworkBehaviour
     private bool isGrounded;
 
     public NetworkVariable<int> TeamID = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Server);
-    public NetworkVariable<Vector2> AimDirection = new NetworkVariable<Vector2>(Vector2.right, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<Vector2> AimDirection = new NetworkVariable<Vector2>(
+        Vector2.right,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner
+    );
 
     private void Awake()
     {
@@ -29,7 +33,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (IsServer)
         {
-            TeamID.Value = Random.Range(0, 2); // Example: 0 or 1
+            TeamID.Value = Random.Range(0, 2);
         }
 
         GetComponent<SpriteRenderer>().color = TeamID.Value == 0 ? Color.red : Color.blue;

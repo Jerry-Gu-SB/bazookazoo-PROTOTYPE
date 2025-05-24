@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class AimAtMouse : MonoBehaviour
+public class AimAtMouse : NetworkBehaviour
 {
     public Transform playerCenter;
 
     void Update()
     {
+        if (!IsOwner) return;
+
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
 
