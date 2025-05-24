@@ -10,13 +10,14 @@ public class Rocket : NetworkBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!IsServer) return;
         if (hasExploded) return;
 
         if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Player"))
         {
             hasExploded = true;
             Explode();
-            Destroy(gameObject);
+            NetworkObject.Despawn();
         }
     }
 

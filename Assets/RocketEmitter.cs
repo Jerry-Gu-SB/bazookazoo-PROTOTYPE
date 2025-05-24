@@ -5,7 +5,6 @@ public class RocketEmitter : NetworkBehaviour
 {
     public GameObject bulletPrefab;
     public Transform firePoint;
-    public PlayerMovement player;
 
     void Update()
     {
@@ -13,14 +12,17 @@ public class RocketEmitter : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-            var rocket = bullet.GetComponent<Rocket>();
-            rocket.shooterTeam = player.TeamID.Value;
-
-            var bulletRb = bullet.GetComponent<Rigidbody2D>();
-            bulletRb.velocity = firePoint.right * 10f;
-
-            bullet.GetComponent<NetworkObject>().Spawn(true);
+            ShootServerRpc(firePoint.position, firePoint.rotation);
         }
+    }
+
+    [ServerRpc]
+    void ShootServerRpc(Vector3 position, Quaternion rotation)
+    {
+        GameObject bullet = Instantiate(bulletPrefab, position, rotation);
+        bullet.GetComponent<NetworkObject>().Spawn();
+
+        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+        rb.velocity = bullet.transform.right * 10f;
     }
 }
