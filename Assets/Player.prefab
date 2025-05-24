@@ -317,7 +317,6 @@ GameObject:
   - component: {fileID: 3073416505753207898}
   - component: {fileID: 4847611403861851247}
   - component: {fileID: 4984026435472986505}
-  - component: {fileID: 5822716339027684591}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -407,7 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2445711728
+  GlobalObjectIdHash: 534458948
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -504,19 +503,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &5822716339027684591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5795520538367888210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 126cb3e33c8ce7840a21bad66d260dd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerCamera: {fileID: 3530319756581692697}
 --- !u!1 &6772618720683656627
 GameObject:
   m_ObjectHideFlags: 0
