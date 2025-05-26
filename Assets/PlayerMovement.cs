@@ -17,32 +17,15 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private bool isGrounded;
 
-    public NetworkVariable<int> TeamID = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Server);
-    public NetworkVariable<Vector2> AimDirection = new NetworkVariable<Vector2>(
-        Vector2.right,
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Owner
-    );
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            TeamID.Value = Random.Range(0, 2);
-        }
-
-        GetComponent<SpriteRenderer>().color = TeamID.Value == 0 ? Color.red : Color.blue;
-    }
-
     private void Update()
     {
         if (!IsOwner) return;
-
+        
         horizontalInput = Input.GetAxis("Horizontal");
 
         if (Input.GetButtonDown("Jump"))
@@ -53,14 +36,10 @@ public class PlayerMovement : NetworkBehaviour
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 aim = (mouseWorld - transform.position);
         aim.Normalize();
-
-        AimDirection.Value = aim;
     }
 
     private void FixedUpdate()
     {
-        if (!IsOwner) return;
-
         Vector2 targetVelocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
         Vector2 velocityChange = targetVelocity - rb.velocity;
         rb.AddForce(new Vector2(velocityChange.x, 0), ForceMode2D.Force);

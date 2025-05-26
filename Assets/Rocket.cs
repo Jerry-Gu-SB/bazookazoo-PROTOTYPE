@@ -1,7 +1,6 @@
-using Unity.Netcode;
 using UnityEngine;
 
-public class Rocket : NetworkBehaviour
+public class Rocket : MonoBehaviour
 {
     public float explosionRadius = 5f;
     public float explosionForce = 5f;
@@ -10,14 +9,12 @@ public class Rocket : NetworkBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!IsServer) return;
         if (hasExploded) return;
 
         if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Player"))
         {
             hasExploded = true;
             Explode();
-            NetworkObject.Despawn();
         }
     }
 
@@ -29,7 +26,7 @@ public class Rocket : NetworkBehaviour
             if (hit.CompareTag("Player"))
             {
                 var pm = hit.GetComponent<PlayerMovement>();
-                if (pm != null && pm.TeamID.Value != shooterTeam)
+                if (pm != null)
                 {
                     Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
                     Vector2 dir = (Vector2)(hit.transform.position - transform.position).normalized;
