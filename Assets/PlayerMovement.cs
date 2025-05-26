@@ -17,11 +17,6 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private bool isGrounded;
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
-
     private void Update()
     {
         if (!IsOwner) return;
