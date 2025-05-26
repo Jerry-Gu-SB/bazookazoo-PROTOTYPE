@@ -7,6 +7,6 @@ public class ClientNetworkTransform : NetworkTransform
 {
     protected override bool OnIsServerAuthoritative()
     {
-        return base.OnIsServerAuthoritative();
+        return false;
     }
 }
