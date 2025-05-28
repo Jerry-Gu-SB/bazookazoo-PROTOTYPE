@@ -4,22 +4,13 @@ using UnityEngine;
 public class AimAtMouse : NetworkBehaviour
 {
     public Transform playerCenter;
+    public Camera playerCamera; // Drag the player’s camera here in prefab
 
-    private Camera mainCam;
-
-    private void Start()
+    private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || playerCamera == null) return;
 
-        // Cache the local camera once at the start
-        mainCam = Camera.main;
-    }
-
-    void Update()
-    {
-        if (!IsOwner || mainCam == null) return;
-
-        Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mousePos = playerCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
 
         Vector3 direction = mousePos - playerCenter.position;
