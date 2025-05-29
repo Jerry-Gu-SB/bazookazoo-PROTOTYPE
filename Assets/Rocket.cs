@@ -10,7 +10,6 @@ public class Rocket : NetworkBehaviour
 
     private Rigidbody2D rb;
 
-    // ✅ Sync velocity to all clients
     public NetworkVariable<Vector2> InitialVelocity = new NetworkVariable<Vector2>();
 
     void Awake()
@@ -20,9 +19,9 @@ public class Rocket : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // ✅ Apply velocity on all clients as soon as we spawn
         if (IsClient)
         {
+            // Apply velocity immediately on all clients when spawned
             rb.velocity = InitialVelocity.Value;
         }
     }
@@ -49,11 +48,11 @@ public class Rocket : NetworkBehaviour
     {
         hasExploded = true;
         Explode();
+
         if (IsServer)
         {
             NetworkObject.Despawn();
         }
-
     }
 
     void Explode()
