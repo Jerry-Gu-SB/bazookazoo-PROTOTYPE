@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-
+    public int team;
     public float moveSpeed = 10f;
     public float jumpForce = 10f;
 
@@ -22,7 +22,6 @@ public class PlayerMovement : NetworkBehaviour
         if (!IsOwner) return;
         
         horizontalInput = Input.GetAxis("Horizontal");
-        Debug.Log("Input: " + horizontalInput);
         if (Input.GetButtonDown("Jump"))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
@@ -39,6 +38,5 @@ public class PlayerMovement : NetworkBehaviour
         Vector2 targetVelocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
         Vector2 velocityChange = targetVelocity - rb.velocity;
         rb.AddForce(new Vector2(velocityChange.x, 0), ForceMode2D.Force);
-        Debug.Log("Velocity: " + rb.velocity);
     }
 }

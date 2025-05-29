@@ -1,21 +1,59 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Rocket : MonoBehaviour
+public class Rocket : NetworkBehaviour
 {
     public float explosionRadius = 5f;
     public float explosionForce = 5f;
     public bool hasExploded = false;
     public int shooterTeam;
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private Rigidbody2D rb;
+
+    // ✅ Sync velocity to all clients
+    public NetworkVariable<Vector2> InitialVelocity = new NetworkVariable<Vector2>();
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        // ✅ Apply velocity on all clients as soon as we spawn
+        if (IsClient)
+        {
+            rb.velocity = InitialVelocity.Value;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (hasExploded) return;
 
-        if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Player"))
+        if (collision.collider.CompareTag("Ground"))
         {
-            hasExploded = true;
-            Explode();
+            ExplodeAndDestroy();
         }
+        else if (collision.collider.CompareTag("Player"))
+        {
+            var pm = collision.collider.GetComponent<PlayerMovement>();
+            if (pm != null && pm.team != shooterTeam)
+            {
+                ExplodeAndDestroy();
+            }
+        }
+    }
+
+    void ExplodeAndDestroy()
+    {
+        hasExploded = true;
+        Explode();
+        if (IsServer)
+        {
+            NetworkObject.Despawn();
+        }
+
     }
 
     void Explode()
@@ -29,7 +67,7 @@ public class Rocket : MonoBehaviour
                 if (pm != null)
                 {
                     Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
-                    Vector2 dir = (Vector2)(hit.transform.position - transform.position).normalized;
+                    Vector2 dir = (hit.transform.position - transform.position).normalized;
                     float dist = Vector2.Distance(transform.position, hit.transform.position);
                     float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
                     prb.AddForce(dir * force, ForceMode2D.Impulse);

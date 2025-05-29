@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2445711728
+  GlobalObjectIdHash: 713184346
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -243,6 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 4847611403861851247}
+  team: 0
   moveSpeed: 10
   jumpForce: 3
   groundCheckRadius: 0.2
@@ -264,7 +265,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 2
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 1
@@ -520,6 +521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 8124241534398955514, guid: d6fc9b91c676a7442b3d8e8fbc940619, type: 3}
   firePoint: {fileID: 863466013443570933}
+  playerTeam: 0
 --- !u!1 &6787829115571595653
 GameObject:
   m_ObjectHideFlags: 0

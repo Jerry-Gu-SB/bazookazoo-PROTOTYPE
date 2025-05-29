@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 5
-  explosionForce: 20
+  explosionForce: 30
   hasExploded: 0
   shooterTeam: 0
 --- !u!50 &3528261394179401414
