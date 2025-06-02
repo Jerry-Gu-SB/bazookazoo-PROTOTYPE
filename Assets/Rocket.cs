@@ -7,6 +7,8 @@ public class Rocket : NetworkBehaviour
     public float explosionForce = 5f;
     public bool hasExploded = false;
     public int shooterTeam;
+    public int maxDamageToEnemy = 100;
+    public int maxDamageToSelf = 40;
 
     private Rigidbody2D rb;
 
@@ -37,7 +39,7 @@ public class Rocket : NetworkBehaviour
         else if (collision.collider.CompareTag("Player"))
         {
             var pm = collision.collider.GetComponent<PlayerMovement>();
-            if (pm != null && pm.team != shooterTeam)
+            if (pm != null && pm.team.Value != shooterTeam)
             {
                 ExplodeAndDestroy();
             }
@@ -56,22 +58,38 @@ public class Rocket : NetworkBehaviour
     }
 
     void Explode()
+{
+    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+    foreach (var hit in hits)
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-        foreach (var hit in hits)
+        if (hit.CompareTag("Player"))
         {
-            if (hit.CompareTag("Player"))
+            var pm = hit.GetComponent<PlayerMovement>();
+            var health = hit.GetComponent<PlayerHealth>();
+            var netObj = hit.GetComponent<NetworkObject>();
+
+            if (pm != null && health != null && netObj != null)
             {
-                var pm = hit.GetComponent<PlayerMovement>();
-                if (pm != null)
-                {
-                    Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
-                    Vector2 dir = (hit.transform.position - transform.position).normalized;
-                    float dist = Vector2.Distance(transform.position, hit.transform.position);
-                    float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
-                    prb.AddForce(dir * force, ForceMode2D.Impulse);
-                }
+                // Explosion force
+                Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
+                Vector2 dir = (hit.transform.position - transform.position).normalized;
+                float dist = Vector2.Distance(transform.position, hit.transform.position);
+                float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
+                prb.AddForce(dir * force, ForceMode2D.Impulse);
+
+                // Damage falloff
+                float distanceFactor = dist / explosionRadius;
+
+                // Compare hit player's team to shooter
+                bool isSelf = pm.team.Value == shooterTeam;
+
+                int maxDamage = isSelf ? maxDamageToSelf : maxDamageToEnemy;
+                int damage = Mathf.RoundToInt(Mathf.Lerp(maxDamage, 0, distanceFactor));
+
+                health.TakeDamage(damage);
             }
         }
     }
+}
+
 }

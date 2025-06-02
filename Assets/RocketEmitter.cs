@@ -28,6 +28,8 @@ public class RocketEmitter : NetworkBehaviour
     {
         GameObject rocket = Instantiate(bulletPrefab, position, rotation);
         var netObj = rocket.GetComponent<NetworkObject>();
+        netObj.Spawn();
+
         var rocketScript = rocket.GetComponent<Rocket>();
 
         rocketScript.shooterTeam = playerTeam;
@@ -36,6 +38,5 @@ public class RocketEmitter : NetworkBehaviour
         Rigidbody2D rb = rocket.GetComponent<Rigidbody2D>();
         rb.velocity = velocity;
 
-        netObj.Spawn();
     }
 }

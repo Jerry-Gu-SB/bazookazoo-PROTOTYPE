@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    public int team;
     public float moveSpeed = 10f;
     public float jumpForce = 10f;
 
@@ -17,10 +16,38 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private bool isGrounded;
 
+    public NetworkVariable<int> team = new NetworkVariable<int>();
+    private static int nextTeam = 0;
+
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            team.Value = nextTeam;
+            nextTeam = (nextTeam + 1) % 2;
+        }
+
+        team.OnValueChanged += OnTeamChanged;
+
+        // Set color immediately for local + remote players
+        OnTeamChanged(0, team.Value);
+    }
+
+    private void OnTeamChanged(int previousValue, int newValue)
+    {
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = newValue == 0 ? Color.blue : Color.red;
+        }
+    }
+    
     private void Update()
     {
         if (!IsOwner) return;
-        
+
         horizontalInput = Input.GetAxis("Horizontal");
         if (Input.GetButtonDown("Jump"))
         {
