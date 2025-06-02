@@ -16,7 +16,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private bool isGrounded;
 
-    public NetworkVariable<int> team = new NetworkVariable<int>();
+    public NetworkVariable<int> team = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private static int nextTeam = 0;
 
     [SerializeField] private SpriteRenderer spriteRenderer;

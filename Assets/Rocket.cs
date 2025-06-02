@@ -12,8 +12,6 @@ public class Rocket : NetworkBehaviour
 
     private Rigidbody2D rb;
 
-    public NetworkVariable<Vector2> InitialVelocity = new NetworkVariable<Vector2>();
-
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -21,10 +19,10 @@ public class Rocket : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsClient)
+        if (IsServer)
         {
-            // Apply velocity immediately on all clients when spawned
-            rb.velocity = InitialVelocity.Value;
+            // The velocity is already applied server-side in RocketEmitter
+            // No need to do anything here
         }
     }
 
@@ -32,7 +30,8 @@ public class Rocket : NetworkBehaviour
     {
         if (hasExploded) return;
 
-        if (collision.collider.CompareTag("Ground"))
+        if (collision.collider.CompareTag("Ground") ||
+            collision.collider.CompareTag("Rocket"))
         {
             ExplodeAndDestroy();
         }
@@ -53,43 +52,35 @@ public class Rocket : NetworkBehaviour
 
         if (IsServer)
         {
-            NetworkObject.Despawn();
+            NetworkObject.Despawn(true);
         }
     }
 
     void Explode()
-{
-    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-    foreach (var hit in hits)
     {
-        if (hit.CompareTag("Player"))
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        foreach (var hit in hits)
         {
-            var pm = hit.GetComponent<PlayerMovement>();
-            var health = hit.GetComponent<PlayerHealth>();
-            var netObj = hit.GetComponent<NetworkObject>();
-
-            if (pm != null && health != null && netObj != null)
+            if (hit.CompareTag("Player"))
             {
-                // Explosion force
-                Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
-                Vector2 dir = (hit.transform.position - transform.position).normalized;
-                float dist = Vector2.Distance(transform.position, hit.transform.position);
-                float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
-                prb.AddForce(dir * force, ForceMode2D.Impulse);
+                var pm = hit.GetComponent<PlayerMovement>();
+                var health = hit.GetComponent<PlayerHealth>();
+                if (pm != null && health != null)
+                {
+                    Rigidbody2D prb = hit.GetComponent<Rigidbody2D>();
+                    Vector2 dir = (hit.transform.position - transform.position).normalized;
+                    float dist = Vector2.Distance(transform.position, hit.transform.position);
+                    float force = Mathf.Lerp(explosionForce, 0, dist / explosionRadius);
+                    prb.AddForce(dir * force, ForceMode2D.Impulse);
 
-                // Damage falloff
-                float distanceFactor = dist / explosionRadius;
+                    float distanceFactor = dist / explosionRadius;
+                    bool isSelf = pm.team.Value == shooterTeam;
+                    int maxDamage = isSelf ? maxDamageToSelf : maxDamageToEnemy;
+                    int damage = Mathf.RoundToInt(Mathf.Lerp(maxDamage, 0, distanceFactor));
 
-                // Compare hit player's team to shooter
-                bool isSelf = pm.team.Value == shooterTeam;
-
-                int maxDamage = isSelf ? maxDamageToSelf : maxDamageToEnemy;
-                int damage = Mathf.RoundToInt(Mathf.Lerp(maxDamage, 0, distanceFactor));
-
-                health.TakeDamage(damage);
+                    health.TakeDamage(damage);
+                }
             }
         }
     }
-}
-
 }

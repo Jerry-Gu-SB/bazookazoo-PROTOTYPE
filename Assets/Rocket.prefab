@@ -130,8 +130,6 @@ MonoBehaviour:
   shooterTeam: 0
   maxDamageToEnemy: 100
   maxDamageToSelf: 40
-  InitialVelocity:
-    m_InternalValue: {x: 0, y: 0}
 --- !u!50 &3528261394179401414
 Rigidbody2D:
   serializedVersion: 4
@@ -142,7 +140,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 8124241534398955514}
   m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
@@ -258,7 +256,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &7929495682382403770
 MonoBehaviour:
