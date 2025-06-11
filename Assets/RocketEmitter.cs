@@ -27,7 +27,7 @@ public class RocketEmitter : NetworkBehaviour
                 if (player.IsOwner)
                 {
                     localPlayerMovement = player;
-                    localPlayerTeam = localPlayerMovement.team.Value;
+                    localPlayerTeam = player.team.Value;
                     break;
                 }
             }
@@ -45,23 +45,37 @@ public class RocketEmitter : NetworkBehaviour
             Quaternion spawnRot = firePoint.rotation;
             Vector2 launchVelocity = firePoint.right * launchSpeed;
 
-            FireRocketServerRpc(spawnPos, spawnRot, launchVelocity, localPlayerTeam);
+            FireRocketServerRpc(spawnPos, spawnRot, launchVelocity, localPlayerTeam, NetworkObject.OwnerClientId);
         }
     }
 
     [ServerRpc]
-    void FireRocketServerRpc(Vector3 position, Quaternion rotation, Vector2 velocity, int team)
+    void FireRocketServerRpc(Vector3 position, Quaternion rotation, Vector2 velocity, int team, ulong shooterId)
     {
         GameObject rocket = Instantiate(bulletPrefab, position, rotation);
         var netObj = rocket.GetComponent<NetworkObject>();
+
         var rocketScript = rocket.GetComponent<Rocket>();
 
-        // Set server-side logic
-        rocketScript.shooterTeam = team;
+        rocketScript.shooterTeam.Value = team;
+        rocketScript.shooterId.Value = shooterId;
+        rocketScript.InitialVelocity.Value = velocity;
 
         Rigidbody2D rb = rocket.GetComponent<Rigidbody2D>();
         rb.velocity = velocity;
 
-        netObj.Spawn(true); // spawn for all clients
+        // Pass shooter collider for collision ignore
+        var shooterPlayer = NetworkManager.Singleton.ConnectedClients[shooterId].PlayerObject;
+        if (shooterPlayer != null)
+        {
+            var shooterCollider = shooterPlayer.GetComponent<Collider2D>();
+            if (shooterCollider != null)
+            {
+                rocketScript.SetShooterCollider(shooterCollider);
+            }
+        }
+
+        netObj.Spawn(true);
     }
+
 }
